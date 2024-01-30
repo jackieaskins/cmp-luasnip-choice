@@ -32,6 +32,7 @@ use {
   config = function()
     require('cmp_luasnip_choice').setup({
         auto_open = true, -- Automatically open nvim-cmp on choice node (default: true)
+        jump_to_next = true, -- Automatically jump to next node after choice (default: true)
     });
   end,
 }

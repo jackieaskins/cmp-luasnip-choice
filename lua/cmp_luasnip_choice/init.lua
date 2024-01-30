@@ -2,20 +2,19 @@ local cmp = require('cmp')
 
 local default_config = {
     auto_open = true,
+    jump_to_next = true,
 }
 
 local M = {
     source = {}
 }
 
-function M.setup(config)
-    if config == nil then
-        config = default_config
-    else
-        config = vim.tbl_deep_extend('keep', config, default_config)
-    end
+M.config = {}
 
-    if config.auto_open then
+function M.setup(config)
+    M.config = vim.tbl_deep_extend('keep', config or {}, default_config)
+
+    if M.config.auto_open then
         vim.api.nvim_create_autocmd('User', {
             pattern = 'LuasnipChoiceNodeEnter',
             callback = function()
@@ -43,6 +42,10 @@ end
 
 function M.source:execute(completion_item, callback)
     require('luasnip').set_choice(completion_item.index)
+
+    if M.config.jump_to_next and require("luasnip").jumpable(1) then
+        require('luasnip').jump(1)
+    end
     callback(completion_item)
 end
 
