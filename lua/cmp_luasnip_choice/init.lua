@@ -37,7 +37,7 @@ function M.source.new()
 end
 
 function M.source:is_available()
-    return require('luasnip.session').active_choice_node
+    return require("luasnip").choice_active()
 end
 
 function M.source:execute(completion_item, callback)
@@ -64,7 +64,7 @@ function M.source:complete(_, callback)
 
     for _, choice_docstring in ipairs(choice_docstrings) do
         table.insert(items, {
-            label = choice_docstring,
+            label = choice_docstring == "" and "<empty>" or choice_docstring,
             word = "",
             index = _,
             documentation = choice_docstring,
