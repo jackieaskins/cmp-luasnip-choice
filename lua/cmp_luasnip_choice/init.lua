@@ -18,7 +18,7 @@ function M.setup(config)
         vim.api.nvim_create_autocmd('User', {
             pattern = 'LuasnipChoiceNodeEnter',
             callback = function()
-                vim.schedule(function()
+                vim.defer_fn(function()
                     cmp.complete({
                         config = {
                             sources = {
@@ -26,7 +26,7 @@ function M.setup(config)
                             },
                         },
                     })
-                end)
+                end, 100)
             end,
         })
     end
