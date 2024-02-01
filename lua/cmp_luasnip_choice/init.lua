@@ -41,10 +41,18 @@ function M.source:is_available()
 end
 
 function M.source:execute(completion_item, callback)
+    local session = require("luasnip").session
+    local selected = session.active_choice_nodes[vim.api.nvim_get_current_buf()].choices[completion_item.index]
+
     require('luasnip').set_choice(completion_item.index)
 
+    -- If nested snippet node (sn) has insert node, then we do not jump otherwise it will skip the first insert position.
     if M.config.jump_to_next and require("luasnip").jumpable(1) then
-        require('luasnip').jump(1)
+        local has_insert = selected.insert_nodes and #selected.insert_nodes > 0 or false
+        local is_empty = selected.nodes and #selected.nodes == 1 and selected.nodes[1].static_text[1] == ""
+        if not has_insert and not is_empty then
+            require('luasnip').jump(1)
+        end
     end
     callback(completion_item)
 end
@@ -64,7 +72,7 @@ function M.source:complete(_, callback)
 
     for _, choice_docstring in ipairs(choice_docstrings) do
         table.insert(items, {
-            label = choice_docstring == "" and "<empty>" or choice_docstring,
+            label = choice_docstring,
             word = "",
             index = _,
             documentation = choice_docstring,
