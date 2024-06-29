@@ -76,7 +76,7 @@ function M.source:complete(_, callback)
             word = "",
             index = _,
             documentation = choice_docstring,
-            kind = cmp.lsp.CompletionItemKind.Snippet,
+            kind = cmp.lsp.CompletionItemKind.Text,
         })
     end
     callback(items)
