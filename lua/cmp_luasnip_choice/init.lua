@@ -21,9 +21,9 @@ function M.setup(config)
         vim.defer_fn(function()
           cmp.complete({
             config = {
-              sources = {
-                { name = 'luasnip_choice' },
-              },
+              sources = { { name = 'luasnip_choice' } },
+              -- Keep choices in the order they are defined
+              sorting = { comparators = { cmp.config.compare.order } },
             },
           })
         end, 100)
@@ -62,21 +62,23 @@ function M.source:get_keyword_pattern()
 end
 
 function M.source:complete(_, callback)
-  local items = {}
-
   local choices_ok, choice_docstrings = pcall(require('luasnip').get_current_choices)
   if not choices_ok then
     -- no choice active: return no completion-items.
-    callback(items)
+    callback({})
   end
 
-  for _, choice_docstring in ipairs(choice_docstrings) do
+  local items = {}
+  for index, choice_docstring in ipairs(choice_docstrings) do
     table.insert(items, {
-      label = choice_docstring,
+      -- workaround to support showing empty choices
+      label = choice_docstring == '' and ' ' or choice_docstring,
       word = '',
-      index = _,
+      index = index,
+      id = index,
       documentation = choice_docstring,
       kind = cmp.lsp.CompletionItemKind.Text,
+      preselect = index == 1,
     })
   end
   callback(items)
